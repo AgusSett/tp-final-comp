@@ -25,7 +25,11 @@ class vec:
         return sqrt(self.x*self.x + self.y*self.y)
 
     def unit(self):
-        return self * (1.0 / self.norm())
+        m = self.norm()
+        if m != 0.0:
+            return self * (1.0 / m)
+        else:
+            return vec(0, 0)
 
     def rand(self, limit):
         return vec(uniform(-limit, limit), uniform(-limit, limit))

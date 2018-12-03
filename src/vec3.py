@@ -26,7 +26,11 @@ class vec:
         return sqrt(self.x*self.x + self.y*self.y + self.z*self.z)
 
     def unit(self):
-        return self * (1.0 / self.norm())
+        m = self.norm()
+        if m != 0.0:
+            return self * (1.0 / m)
+        else:
+            return vec(0, 0, 0)
 
     def rot_y(self, angle):
         angle = radians(angle)
