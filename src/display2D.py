@@ -5,9 +5,10 @@ from vec2 import *
 from grafo2D import *
 from random import seed
 from font import *
+from argparse import ArgumentParser
 
 class display:
-    def __init__(self, w, h):
+    def __init__(self, w, h, args):
         self.width = w
         self.height = h
 
@@ -38,12 +39,18 @@ class display:
         self.keys = {}
         self.mouse = vec()
         self.grabed = None
+        self.debug = args.debug
 
         self.G = graph()
 
-        self.G.load_matrix("data/petersen")
-        #self.G.complete(10)
-        #self.G.bipartite(3, 6)
+        if args.complete != None:
+            self.G.complete(args.complete)
+
+        if args.bipartite != None:
+            self.G.bipartite(args.bipartite[0], args.bipartite[1])
+
+        if args.file != None:
+            self.G.load_matrix(args.file.name)
 
         self.G.random(50)
 
@@ -131,19 +138,37 @@ class display:
 
         glEnd()
 
+        glColor3f(1, 0, 0)
+        glBegin(GL_LINES)
+
+        if self.debug:
+            for v in g.V:
+                dest = v.p + v.f.unit() * 50.0
+                glVertex2f(v.p.x, v.p.y)
+                glVertex2f(dest.x, dest.y)
+
+        glEnd()
+
         glPointSize(1)
         glColor3f(1, 1, 1)
         for v in g.V:
-            if v.label == "":
-                continue
-
-            glPushMatrix()
+            if self.debug:
+                glPushMatrix()
             
-            glTranslatef(v.p.x + 3, v.p.y + 3, 0)
-            glScalef(0.2, 0.2, 0.2)
-            self.render_string(v.label)
+                glTranslatef(v.p.x + 3, v.p.y - 20, 0.1)
+                glScalef(0.1, 0.1, 0.1)
+                self.render_string("({:.1f}, {:.1f})".format(v.p.x, v.p.y))
 
-            glPopMatrix()
+                glPopMatrix()
+
+            if v.label != "":
+                glPushMatrix()
+                
+                glTranslatef(v.p.x + 3, v.p.y + 3, 0.1)
+                glScalef(0.2, 0.2, 0.2)
+                self.render_string(v.label)
+
+                glPopMatrix()
 
     def render_string(self, str):
         for c in str:
@@ -157,5 +182,14 @@ class display:
             glTranslatef(ch[0], 0.0, 0.0)
 
 if __name__ == "__main__":
-    display = display(900, 710)
+    parser = ArgumentParser()
+    
+    parser.add_argument('-d', '--debug', action='store_true', help="modo debug")
+    
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-f', '--file', type=open, help="carga el grafo desde un archivo")
+    group.add_argument('-k', '--complete', type=int, metavar='K', help="genera un grafo completo con K vertices")
+    group.add_argument('-b', '--bipartite', nargs=2, type=int, metavar=('A', 'B'), help="genera un grafo bipartito completo con A y B vertices cada componente")
+    
+    display = display(900, 710, parser.parse_args())
     display.run()
