@@ -16,7 +16,7 @@ Para ejecutarlo debemos hacer:
 
 ```sh
 $ source bin/activate
-$ python display2D.py # version 2D
-$ python display3D.py # version 3D
+$ python src/display2D.py # version 2D
+$ python src/display3D.py # version 3D
 ```
 
