@@ -54,7 +54,7 @@ class display:
             self.G.bipartite(args.bipartite[0], args.bipartite[1])
 
         if args.file != None:
-            self.G.load_matrix(args.file.name)
+            self.G.load(args.file)
 
         self.G.random(50)
 

@@ -69,18 +69,24 @@ class graph:
         for v in self.V:
             v.p = vec().rand(limit)
 
-    def load_matrix(self, file):
-        with open(file, 'r') as infile:
-            lines = infile.readlines()
+    def load(self, file):
+        with file as infile:
+            n = int(infile.readline())
 
-            labels = lines[0].rstrip().split(" ")
-            lines = lines[1:]
-            
-            for i in range(len(lines)):
-                self.V.append(vertex(label = labels[i]))
+            for i in range(n):
+                v = infile.readline()
+                self.V.append(vertex(label = v.rstrip()))
 
-            for i in range(len(lines)):
-                indices = lines[i].rstrip().split(" ")
-                for j in range(len(indices)):
-                    if indices[j] == '1':
-                        self.E.append(edge(self.V[i], self.V[j]))
+            while True:
+                e = infile.readline()
+                
+                if e == "":
+                    break
+
+                verts = e.rstrip().split(" ")
+
+                find = lambda x : filter(lambda y : y.label == x, self.V)[0]
+                a = find(verts[0])
+                b = find(verts[1])
+
+                self.E.append(edge(a, b))
